@@ -10,7 +10,6 @@ var connection = mysql.createConnection({
 
 var print_products = function() {
 
-
     connection.query('select * from products', function(err, res) {
         if (err) throw err;
 
@@ -27,14 +26,13 @@ var print_products = function() {
           prompt.start();
           prompt.get(['id_to_buy', 'quantity'], function(err, res) {
               if (err) throw err;
-                print_products();
+
               var user_wants = res.id_to_buy;
               var user_quantity = res.quantity;
 
-              console.log(user_wants);
-              console.log(user_quantity);
-
               user_check_purchase(user_wants, user_quantity);
+              prompter = false;
+              print_products();
           });
         }
     });
@@ -48,9 +46,9 @@ var user_check_purchase = function(id, qt) {
         var check_product = res[0].stock - qt;
 
         if (check_product < 0) {
-            console.log('insufficent stock');
+            console.log('insufficent stock!');
         } else {
-            console.log('user may buy ' + res[0].product_name)
+            console.log('user may buy ' + res[0].product_name + "!")
             update_db_w_purch(id, res[0].stock);
         }
     });
@@ -60,8 +58,7 @@ var update_db_w_purch = function(id, quantity) {
     console.log(quantity);
     connection.query('update products set stock = ' + quantity + ' where item_id = ' + id, function(err, res) {
         if (err) throw err;
-        console.log(res);
-        print_products();
+        // console.log(res);
     });
 }
 
@@ -72,16 +69,3 @@ connection.connect(function(err) {
 });
 
 print_products();
-
-// prompt.start();
-// prompt.get(['id_to_buy', 'quantity'], function(err, res) {
-//     if (err) throw err;
-//       print_products();
-//     var user_wants = res.id_to_buy;
-//     var user_quantity = res.quantity;
-//
-//     console.log(user_wants);
-//     console.log(user_quantity);
-//
-//     user_check_purchase(user_wants, user_quantity);
-// });
