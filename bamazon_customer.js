@@ -8,35 +8,37 @@ var connection = mysql.createConnection({
     database: 'bamazon'
 });
 
-connection.connect(function(err) {
-    if (err) throw err;
-    // print_products();
-});
-
-prompt.start();
-prompt.get(['id_to_buy', 'quantity'], function(err, res) {
-    if (err) throw err;
-    var user_wants = res.id_to_buy;
-    var user_quantity = res.quantity;
-
-    console.log(user_wants);
-    console.log(user_quantity);
-
-    user_check_purchase(user_wants, user_quantity);
-});
-
 var print_products = function() {
+
+
     connection.query('select * from products', function(err, res) {
         if (err) throw err;
-        for (i = 0; i < res.length; i++) {
-            console.log(
-                res[i].item_id + ' ' +
-                res[i].product_name + ' ' +
-                res[i].dept_name + ' ' +
-                res[i].price
-            )
+
+        var prompter = false
+
+        res.forEach(function (row) {
+          console.log(JSON.stringify(row, null, 2));
+
+          prompter = true;
+        });
+
+        if(prompter){
+
+          prompt.start();
+          prompt.get(['id_to_buy', 'quantity'], function(err, res) {
+              if (err) throw err;
+                print_products();
+              var user_wants = res.id_to_buy;
+              var user_quantity = res.quantity;
+
+              console.log(user_wants);
+              console.log(user_quantity);
+
+              user_check_purchase(user_wants, user_quantity);
+          });
         }
     });
+
 }
 
 var user_check_purchase = function(id, qt) {
@@ -62,3 +64,24 @@ var update_db_w_purch = function(id, quantity) {
         print_products();
     });
 }
+
+
+connection.connect(function(err) {
+    if (err) throw err;
+    // print_products();
+});
+
+print_products();
+
+// prompt.start();
+// prompt.get(['id_to_buy', 'quantity'], function(err, res) {
+//     if (err) throw err;
+//       print_products();
+//     var user_wants = res.id_to_buy;
+//     var user_quantity = res.quantity;
+//
+//     console.log(user_wants);
+//     console.log(user_quantity);
+//
+//     user_check_purchase(user_wants, user_quantity);
+// });
