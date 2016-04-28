@@ -15,7 +15,7 @@ var print_products = function() {
 
         var prompter = false
 
-        res.forEach(function (row) {
+        res.forEach(function(row) {
           console.log(JSON.stringify(row, null, 2));
 
           prompter = true;
